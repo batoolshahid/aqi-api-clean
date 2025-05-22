@@ -1,0 +1,65 @@
+from fastapi import FastAPI
+from pydantic import BaseModel
+import joblib
+import traceback
+
+app = FastAPI()
+
+# Load Model
+try:
+    model = joblib.load("aqi_model.pkl")
+    print("✅ Model loaded successfully")
+except Exception as e:
+    print("❌ Failed to load model:", e)
+    traceback.print_exc()
+
+# Input Schema
+from pydantic import BaseModel
+
+class AQIInput(BaseModel):
+    so2: float
+    co: float
+    o3: float
+    o3_8hr: float
+    pm10: float
+    pm2_5: float
+    no2: float
+    nox: float
+    no: float
+    windspeed: float
+    winddirec: float
+    co_8hr: float
+    pm2_5_avg: float
+    pm10_avg: float
+    so2_avg: float
+    pollutant_Nitrogen_Dioxide_NO2: float
+    pollutant_Ozone: float
+    pollutant_Ozone_8hr: float
+    pollutant_PM10: float
+    pollutant_PM2_5: float
+    pollutant_Sulfur_Dioxide_SO2: float
+    pollutant_nan: float
+
+# Prediction Endpoint
+@app.post("/predict")
+def predict_aqi(data: AQIInput):
+    try:
+        print(f"Received input: {data}")
+        input_data = [[
+    data.so2, data.co, data.o3, data.o3_8hr, data.pm10, data.pm2_5,
+    data.no2, data.nox, data.no, data.windspeed, data.winddirec, data.co_8hr,
+    data.pm2_5_avg, data.pm10_avg, data.so2_avg,
+    data.pollutant_Nitrogen_Dioxide_NO2, data.pollutant_Ozone, data.pollutant_Ozone_8hr,
+    data.pollutant_PM10, data.pollutant_PM2_5, data.pollutant_Sulfur_Dioxide_SO2,
+    data.pollutant_nan
+]]
+        print(f"Prepared input for model: {input_data}")
+        prediction = model.predict(input_data)
+        print(f"Prediction result: {prediction}")
+        return {"predicted_aqi": prediction[0]}
+    except Exception as e:
+        print("❌ Prediction failed:", e)
+        traceback.print_exc()
+        return {"error": str(e)}
+
+
