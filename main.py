@@ -32,13 +32,6 @@ class AQIInput(BaseModel):
     pm2_5_avg: float
     pm10_avg: float
     so2_avg: float
-    pollutant_Nitrogen_Dioxide_NO2: float
-    pollutant_Ozone: float
-    pollutant_Ozone_8hr: float
-    pollutant_PM10: float
-    pollutant_PM2_5: float
-    pollutant_Sulfur_Dioxide_SO2: float
-    pollutant_nan: float
 
 # Prediction Endpoint
 @app.post("/predict")
@@ -47,11 +40,8 @@ def predict_aqi(data: AQIInput):
         print(f"Received input: {data}")
         input_data = [[
     data.so2, data.co, data.o3, data.o3_8hr, data.pm10, data.pm2_5,
-    data.no2, data.nox, data.no, data.windspeed, data.winddirec, data.co_8hr,
-    data.pm2_5_avg, data.pm10_avg, data.so2_avg,
-    data.pollutant_Nitrogen_Dioxide_NO2, data.pollutant_Ozone, data.pollutant_Ozone_8hr,
-    data.pollutant_PM10, data.pollutant_PM2_5, data.pollutant_Sulfur_Dioxide_SO2,
-    data.pollutant_nan
+    data.no2, data.nox, data.no, data.windspeed, data.winddirec,
+    data.co_8hr, data.pm2_5_avg, data.pm10_avg, data.so2_avg
 ]]
         print(f"Prepared input for model: {input_data}")
         prediction = model.predict(input_data)
